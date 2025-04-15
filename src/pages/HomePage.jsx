@@ -15,7 +15,7 @@ const HomePage = () => {
 
   // Fetch questions from JSON server
   useEffect(() => {
-    fetch("https://sentence-json-api.onrender.com/questions")
+    fetch("https://sentence-json-api.onrender.com/questionData")
       .then((res) => res.json())
       .then((data) => {
         setQuestions(data);
