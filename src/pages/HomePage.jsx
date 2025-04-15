@@ -1,48 +1,36 @@
-import { useEffect, useState } from 'react';
-import axios from 'axios';
-import Sentence from './Sentence';
+import React from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const HomePage = () => {
-  const [questions, setQuestions] = useState([]);
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [selectedWords, setSelectedWords] = useState([]);
+  const navigate = useNavigate();
 
-  useEffect(() => {
-    const fetchQuestions = async () => {
-      try {
-        const res = await axios.get('http://localhost:3000/questions');
-        if (res.data.status === 'SUCCESS') {
-          setQuestions(res.data.data.questions);
-          setSelectedWords(new Array(res.data.data.questions[0].correctAnswer.length).fill(''));
-        }
-      } catch (error) {
-        console.error('Error fetching questions:', error);
+  const startQuiz = async () => {
+    try {
+      const res = await axios.get("https://sentence-json-api.onrender.com/questionData");
+      if (res.data.status === "SUCCESS") {
+        const questions = res.data.data.questions;
+        navigate("/sentence", { state: { questions } });
       }
-    };
-
-    fetchQuestions();
-  }, []);
-
-  const handleBlankClick = (index) => {
-    const newWords = [...selectedWords];
-    newWords[index] = ''; // Clear clicked blank
-    setSelectedWords(newWords);
+    } catch (error) {
+      console.error("Error fetching questions:", error);
+    }
   };
 
-  if (questions.length === 0) return <div>Loading...</div>;
-
-  const currentQuestion = questions[currentIndex];
-  const sentenceParts = currentQuestion.question.split('_____________');
-
   return (
-    <div className="max-w-4xl mx-auto p-6">
-      <h1 className="text-2xl font-bold text-center mb-4">Fill in the Blanks</h1>
-      <Sentence
-        sentenceParts={sentenceParts}
-        selectedWords={selectedWords}
-        handleBlankClick={handleBlankClick}
-      />
-      {/* You’ll probably want to add options and navigation too */}
+    <div className="min-h-screen bg-gray-100 flex items-center justify-center px-4">
+      <div className="bg-white shadow-lg rounded-2xl p-8 max-w-2xl text-center space-y-6">
+        <h1 className="text-3xl font-bold text-blue-700">Welcome to the Sentence Completion Quiz</h1>
+        <p className="text-gray-700 text-md">
+          Fill in the blanks using the options provided. You have 30 seconds per question. Your score will be shown at the end.
+        </p>
+        <button
+          onClick={startQuiz}
+          className="mt-4 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white text-lg rounded-lg font-semibold transition-all duration-200"
+        >
+          Start Quiz
+        </button>
+      </div>
     </div>
   );
 };
