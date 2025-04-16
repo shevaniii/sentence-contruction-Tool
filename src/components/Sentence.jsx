@@ -15,13 +15,13 @@ const Sentence = () => {
     if (questions.length > 0) {
       const currentQuestion = questions[currentIndex];
       setSelectedWords(new Array(currentQuestion.correctAnswer.length).fill(""));
-      setTimer(30); // Reset timer
+      setTimer(30);
     }
   }, [currentIndex, questions]);
 
   useEffect(() => {
     if (timer === 0) {
-      handleAutoNext(); // Auto-next when timer runs out
+      handleAutoNext();
       return;
     }
 
@@ -41,7 +41,9 @@ const Sentence = () => {
     if (currentIndex < questions.length - 1) {
       setCurrentIndex((prev) => prev + 1);
     } else {
-      navigate("/feedback", { state: { score: isCorrect ? score + 1 : score, total: questions.length } });
+      navigate("/feedback", {
+        state: { score: isCorrect ? score + 1 : score, total: questions.length },
+      });
     }
   };
 
@@ -65,37 +67,37 @@ const Sentence = () => {
   };
 
   if (questions.length === 0) {
-    return <p className="text-center mt-10">Loading questions...</p>;
+    return <p className="text-center mt-10 text-gray-600">Loading questions...</p>;
   }
 
   const currentQ = questions[currentIndex];
   const parts = currentQ.question.split(/__+/g);
 
   return (
-    <div className="p-4 flex justify-center items-center min-h-screen bg-gray-100">
-      <div className="bg-white p-8 rounded-xl shadow-md max-w-3xl w-full text-center">
-        <h2 className="text-xl font-semibold mb-4 text-blue-700">
-          Question {currentIndex + 1} / {questions.length}
-        </h2>
-
-        {/* Timer Display */}
-        <div className="text-lg font-bold text-red-600 mb-4">
-          Time Left: {timer}s
+    <div className="min-h-screen flex items-center justify-center bg-white px-4">
+      <div className="bg-white rounded-2xl shadow-xl w-full max-w-3xl p-6 space-y-6">
+        {/* Top Section: Question & Timer */}
+        <div className="flex justify-between items-center text-sm text-gray-600">
+          <span className="font-medium">
+            Question {currentIndex + 1}/{questions.length}
+          </span>
+          <span className="font-semibold text-red-500">Time Left: {timer}s</span>
         </div>
 
-        {/* Sentence with blanks filled */}
-        <div className="text-lg font-medium text-gray-800 mb-6 leading-8">
+        {/* Sentence */}
+        <div className="text-lg font-medium text-gray-800 leading-8 text-center">
           {parts.map((part, i) => (
             <span key={i}>
               {part}
               {i < currentQ.correctAnswer.length && (
                 <button
                   onClick={() => handleBlankClick(i)}
-                  className={`inline-block align-middle mx-1 min-w-[80px] px-2 py-1 rounded-md border text-sm font-semibold transition ${
-                    selectedWords[i]
-                      ? "bg-blue-100 text-blue-800 hover:bg-blue-200"
-                      : "bg-gray-100 text-gray-400 hover:bg-gray-200"
-                  }`}
+                  className={`inline-block align-middle mx-1 min-w-[80px] px-3 py-1 rounded-lg border text-base font-semibold transition 
+                    ${
+                      selectedWords[i]
+                        ? "bg-blue-100 text-blue-700 hover:bg-blue-200"
+                        : "bg-gray-100 text-gray-400 hover:bg-gray-200"
+                    }`}
                 >
                   {selectedWords[i] || "____"}
                 </button>
@@ -104,27 +106,29 @@ const Sentence = () => {
           ))}
         </div>
 
-        {/* Word options */}
-        <div className="flex flex-wrap justify-center gap-3 mb-6">
+        {/* Word Options */}
+        <div className="flex flex-wrap justify-center gap-3">
           {currentQ.options.map((word, idx) => (
             <button
               key={idx}
               onClick={() => handleWordClick(word)}
               disabled={selectedWords.includes(word)}
-              className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 disabled:opacity-50"
+              className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 disabled:opacity-40 transition"
             >
               {word}
             </button>
           ))}
         </div>
 
-        {/* Next Button */}
-        <button
-          onClick={handleNext}
-          className="bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700"
-        >
-          {currentIndex === questions.length - 1 ? "Finish" : "Next"}
-        </button>
+        {/* Bottom Buttons */}
+        <div className="flex justify-center">
+          <button
+            onClick={handleNext}
+            className="bg-indigo-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-indigo-700 transition"
+          >
+            {currentIndex === questions.length - 1 ? "Finish" : "Next"}
+          </button>
+        </div>
       </div>
     </div>
   );

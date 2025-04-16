@@ -18,18 +18,42 @@ const HomePage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center px-4">
-      <div className="bg-white shadow-lg rounded-2xl p-8 max-w-2xl text-center space-y-6">
-        <h1 className="text-3xl font-bold text-blue-700">Welcome to the Sentence Completion Quiz</h1>
-        <p className="text-gray-700 text-md">
-          Fill in the blanks using the options provided. You have 30 seconds per question. Your score will be shown at the end.
+    <div className="flex flex-col items-center justify-center h-screen bg-white px-4">
+      <div className="bg-white shadow-xl rounded-2xl p-8 max-w-xl w-full text-center">
+        <h1 className="text-2xl font-semibold text-gray-800 mb-2">Sentence Construction</h1>
+        <p className="text-sm text-gray-500 mb-6">
+          Select the correct words to complete the sentence by arranging the provided options in the right order.
         </p>
-        <button
-          onClick={startQuiz}
-          className="mt-4 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white text-lg rounded-lg font-semibold transition-all duration-200"
-        >
-          Start Quiz
-        </button>
+
+        <div className="grid grid-cols-3 gap-4 mb-6">
+          <div>
+            <p className="text-sm text-gray-500">Time Per Question</p>
+            <p className="text-base font-semibold text-gray-800">30 sec</p>
+          </div>
+          <div>
+            <p className="text-sm text-gray-500">Total Questions</p>
+            <p className="text-base font-semibold text-gray-800">10</p>
+          </div>
+          <div>
+            <p className="text-sm text-gray-500">Coins</p>
+            <p className="text-base font-semibold text-yellow-500">● 0</p>
+          </div>
+        </div>
+
+        <div className="flex justify-center gap-4">
+          <button
+            className="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100 transition"
+            onClick={() => navigate("/")}
+          >
+            Back
+          </button>
+          <button
+            onClick={startQuiz}
+            className="px-6 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium transition"
+          >
+            Start
+          </button>
+        </div>
       </div>
     </div>
   );
