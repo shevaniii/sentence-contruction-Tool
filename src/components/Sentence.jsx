@@ -7,6 +7,7 @@ const Sentence = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedWords, setSelectedWords] = useState([]);
   const [score, setScore] = useState(0);
+  const [timer, setTimer] = useState(30);
 
   const questions = location.state?.questions || [];
 
@@ -14,8 +15,35 @@ const Sentence = () => {
     if (questions.length > 0) {
       const currentQuestion = questions[currentIndex];
       setSelectedWords(new Array(currentQuestion.correctAnswer.length).fill(""));
+      setTimer(30); // Reset timer
     }
   }, [currentIndex, questions]);
+
+  useEffect(() => {
+    if (timer === 0) {
+      handleAutoNext(); // Auto-next when timer runs out
+      return;
+    }
+
+    const countdown = setInterval(() => {
+      setTimer((prev) => prev - 1);
+    }, 1000);
+
+    return () => clearInterval(countdown);
+  }, [timer]);
+
+  const handleAutoNext = () => {
+    const correct = questions[currentIndex].correctAnswer;
+    const isCorrect = correct.every((word, i) => word === selectedWords[i]);
+
+    if (isCorrect) setScore((prev) => prev + 1);
+
+    if (currentIndex < questions.length - 1) {
+      setCurrentIndex((prev) => prev + 1);
+    } else {
+      navigate("/feedback", { state: { score: isCorrect ? score + 1 : score, total: questions.length } });
+    }
+  };
 
   const handleWordClick = (word) => {
     const nextEmptyIndex = selectedWords.findIndex((w) => w === "");
@@ -33,16 +61,7 @@ const Sentence = () => {
   };
 
   const handleNext = () => {
-    const correct = questions[currentIndex].correctAnswer;
-    const isCorrect = correct.every((word, i) => word === selectedWords[i]);
-
-    if (isCorrect) setScore((prev) => prev + 1);
-
-    if (currentIndex < questions.length - 1) {
-      setCurrentIndex((prev) => prev + 1);
-    } else {
-      navigate("/feedback", { state: { score, total: questions.length } });
-    }
+    handleAutoNext();
   };
 
   if (questions.length === 0) {
@@ -52,7 +71,6 @@ const Sentence = () => {
   const currentQ = questions[currentIndex];
   const parts = currentQ.question.split(/__+/g);
 
-
   return (
     <div className="p-4 flex justify-center items-center min-h-screen bg-gray-100">
       <div className="bg-white p-8 rounded-xl shadow-md max-w-3xl w-full text-center">
@@ -60,26 +78,31 @@ const Sentence = () => {
           Question {currentIndex + 1} / {questions.length}
         </h2>
 
+        {/* Timer Display */}
+        <div className="text-lg font-bold text-red-600 mb-4">
+          Time Left: {timer}s
+        </div>
+
         {/* Sentence with blanks filled */}
         <div className="text-lg font-medium text-gray-800 mb-6 leading-8">
-  {parts.map((part, i) => (
-    <span key={i}>
-      {part}
-      {i < currentQ.correctAnswer.length && (
-        <button
-          onClick={() => handleBlankClick(i)}
-          className={`inline-block align-middle mx-1 min-w-[80px] px-2 py-1 rounded-md border text-sm font-semibold transition ${
-            selectedWords[i]
-              ? "bg-blue-100 text-blue-800 hover:bg-blue-200"
-              : "bg-gray-100 text-gray-400 hover:bg-gray-200"
-          }`}
-        >
-          {selectedWords[i] || "____"}
-        </button>
-      )}
-    </span>
-  ))}
-</div>
+          {parts.map((part, i) => (
+            <span key={i}>
+              {part}
+              {i < currentQ.correctAnswer.length && (
+                <button
+                  onClick={() => handleBlankClick(i)}
+                  className={`inline-block align-middle mx-1 min-w-[80px] px-2 py-1 rounded-md border text-sm font-semibold transition ${
+                    selectedWords[i]
+                      ? "bg-blue-100 text-blue-800 hover:bg-blue-200"
+                      : "bg-gray-100 text-gray-400 hover:bg-gray-200"
+                  }`}
+                >
+                  {selectedWords[i] || "____"}
+                </button>
+              )}
+            </span>
+          ))}
+        </div>
 
         {/* Word options */}
         <div className="flex flex-wrap justify-center gap-3 mb-6">
